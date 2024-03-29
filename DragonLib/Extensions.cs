@@ -435,4 +435,8 @@ public static class Extensions {
 
 		return sb.ToString();
 	}
+
+	public static T? SafeDequeue<T>(this Queue<T> queue, T? fallback = default) {
+		return queue.Count == 0 ? fallback : queue.Dequeue();
+	}
 }
