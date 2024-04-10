@@ -12,8 +12,9 @@ public static class Extensions {
 	public const long OneEiB = OnePiB * 1024;
 	private static readonly sbyte[] SignedNibbles = [0, 1, 2, 3, 4, 5, 6, 7, -8, -7, -6, -5, -4, -3, -2, -1];
 	private static readonly string[] BytePoints = ["B", "KiB", "MiB", "GiB", "TiB", "PiB", "EiB"];
+	public static TimeSpan OneNanosecond { get; } = TimeSpan.FromMicroseconds(0.001);
 	public static TimeSpan OneMicrosecond { get; } = TimeSpan.FromMicroseconds(1);
-	public static TimeSpan OneMilisecond { get; } = TimeSpan.FromMilliseconds(1);
+	public static TimeSpan OneMillisecond { get; } = TimeSpan.FromMilliseconds(1);
 	public static TimeSpan OneSecond { get; } = TimeSpan.FromSeconds(1);
 	public static TimeSpan OneMinute { get; } = TimeSpan.FromMinutes(1);
 	public static TimeSpan OneHour { get; } = TimeSpan.FromHours(1);
@@ -278,12 +279,15 @@ public static class Extensions {
 		} else if (time >= OneSecond) {
 			amount = (long) Math.Floor(time / OneSecond);
 			metric = shortForm ? "s" : "second";
-		} else if (time >= OneMilisecond) {
-			amount = (long) Math.Floor(time / OneMilisecond);
-			metric = shortForm ? "ms" : "milisecond";
+		} else if (time >= OneMillisecond) {
+			amount = (long) Math.Floor(time / OneMillisecond);
+			metric = shortForm ? "ms" : "millisecond";
 		} else if (time >= OneMicrosecond) {
 			amount = (long) Math.Floor(time / OneMicrosecond);
 			metric = shortForm ? "us" : "microsecond";
+		} else if (time >= OneNanosecond) {
+			amount = (long) Math.Floor(time / OneNanosecond);
+			metric = shortForm ? "ns" : "nanosecond";
 		} else {
 			amount = time.Ticks;
 			metric = shortForm ? "t" : "tick";
