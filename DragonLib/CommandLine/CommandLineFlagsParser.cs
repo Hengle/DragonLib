@@ -58,7 +58,7 @@ public static class CommandLineFlagsParser {
 		var usageSlimOneChOptional = "[-";
 		var usageSlimMultiCh = string.Empty;
 		var usageSlimPositional = string.Empty;
-		foreach (var (_, (flag, originalType)) in flags) {
+		foreach (var (_, (flag, originalType)) in flags.OrderBy(x => x.Value.Flag.Positional)) {
 			var type = Nullable.GetUnderlyingType(originalType) ?? originalType;
 			var tn = type.Name;
 
