@@ -10,6 +10,7 @@ public abstract class RuntimeArrayBase : IEquatable<RuntimeArrayBase> {
 	internal static unsafe FreeArrayDelegate NativeFree { get; } = NativeMemory.Free;
 	internal static unsafe FreeArrayDelegate NativeAlignedFree { get; } = NativeMemory.AlignedFree;
 
+	// ReSharper disable once MemberCanBeProtected.Global
 	public long Length { get; protected init; }
 	protected nint Ptr { get; init; }
 	protected bool Freed { get; set; }
@@ -39,7 +40,7 @@ public unsafe delegate void FreeArrayDelegate(void* ptr);
 public unsafe delegate void FreeArrayCarryDelegate(void* ptr, object[] carry);
 
 public sealed class RuntimeArray<T> : RuntimeArrayBase, IDisposable, IEnumerable<T>, IEquatable<RuntimeArray<T>> where T : unmanaged {
-	private readonly object[] Carry = Array.Empty<object>();
+	private readonly object[] Carry = [];
 	private readonly FreeArrayCarryDelegate? FreeArrayCarryInner;
 	private readonly FreeArrayDelegate FreeArrayInner;
 
@@ -142,16 +143,14 @@ public sealed class RuntimeArray<T> : RuntimeArrayBase, IDisposable, IEnumerable
 	}
 
 	private void ThrowIfDisposed() {
-		if (Freed) {
-			throw new ObjectDisposedException(nameof(RuntimeArray<T>));
-		}
+		ObjectDisposedException.ThrowIf(Freed, this);
 	}
 
 	public unsafe T[] ToManaged() {
 		ThrowIfDisposed();
 
 		if (IsEmpty) {
-			return Array.Empty<T>();
+			return [];
 		}
 
 		var array = new T[Length];

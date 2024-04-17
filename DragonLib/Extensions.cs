@@ -378,6 +378,7 @@ public static class Extensions {
 		var keyValues = utf32.GetBytes($"{quoteValue}{escapeValue}").AsSpan().As<int>();
 		var quote = keyValues[0];
 		var escape = keyValues[1];
+		// ReSharper disable twice ArrangeRedundantParentheses
 		var charBuffer = (stackalloc char[5]);
 		var chBuffer32 = (stackalloc int[1]);
 		ReadOnlySpan<byte> chBuffer = chBuffer32.AsBytes();
@@ -440,7 +441,5 @@ public static class Extensions {
 		return sb.ToString();
 	}
 
-	public static T? SafeDequeue<T>(this Queue<T> queue, T? fallback = default) {
-		return queue.Count == 0 ? fallback : queue.Dequeue();
-	}
+	public static T? SafeDequeue<T>(this Queue<T> queue, T? fallback = default) => queue.Count == 0 ? fallback : queue.Dequeue();
 }

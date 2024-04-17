@@ -66,20 +66,21 @@ public static class DragonMarkup {
 			case DragonMarkupType.Array when type != null:
 			case DragonMarkupType.Memory when type != null:
 			case DragonMarkupType.Enumerable when type != null:
-				if (!visited.ContainsKey(instance!)) {
-					visited[instance!] = visited.Count;
+				if (!visited.TryGetValue(instance!, out var enumRefId)) {
+					enumRefId = visited[instance!] = visited.Count;
 					var hmlIdTag = settings.UseRefId
-						? $" {CreateNamespacedTag("id", settings.Namespace)}=\"{visited[instance!]}\""
+						? $" {CreateNamespacedTag("id", settings.Namespace)}=\"{enumRefId}\""
 						: string.Empty;
 					var tag = $"{indents}<{CreateNamespacedTag("array", settings.Namespace)}{hmlIdTag}{hmlNameTag}>\n";
-					if (target == DragonMarkupType.Enumerable && instance is IEnumerable enumerable) {
-						instance = enumerable.Cast<object>().ToArray();
-					} else if (target == DragonMarkupType.Memory) {
-						var target1 = instance!.GetType().GetGenericArguments()[0];
-						if (instance.GetType().GetGenericTypeDefinition() == typeof(Memory<>)) {
-							instance = typeof(DragonMarkup).GetMethod("UnwrapMemory")!.MakeGenericMethod(target1).Invoke(null, new[] { instance });
-						} else {
-							instance = typeof(DragonMarkup).GetMethod("UnwrapReadOnlyMemory")!.MakeGenericMethod(target1).Invoke(null, new[] { instance });
+					// ReSharper disable once SwitchStatementMissingSomeEnumCasesNoDefault
+					switch (target) {
+						case DragonMarkupType.Enumerable when instance is IEnumerable enumerable:
+							instance = enumerable.Cast<object>().ToArray();
+							break;
+						case DragonMarkupType.Memory: {
+							var target1 = instance!.GetType().GetGenericArguments()[0];
+							instance = typeof(DragonMarkup).GetMethod(instance.GetType().GetGenericTypeDefinition() == typeof(Memory<>) ? "UnwrapMemory" : "UnwrapReadOnlyMemory")!.MakeGenericMethod(target1).Invoke(null, [instance]);
+							break;
 						}
 					}
 
@@ -104,15 +105,15 @@ public static class DragonMarkup {
 					return tag;
 				} else {
 					var hmlIdTag = settings.UseRefId
-						? $" {CreateNamespacedTag("id", settings.Namespace)}=\"{visited[instance!]}\""
+						? $" {CreateNamespacedTag("id", settings.Namespace)}=\"{enumRefId}\""
 						: string.Empty;
 					return $"{indents}<{CreateNamespacedTag("ref", settings.Namespace)}{hmlIdTag}{hmlNameTag} />\n";
 				}
 			case DragonMarkupType.Object when type != null:
-				if (!visited.ContainsKey(instance!)) {
-					visited[instance!] = visited.Count;
+				if (!visited.TryGetValue(instance!, out var objRefId)) {
+					objRefId = visited[instance!] = visited.Count;
 					var hmlIdTag = settings.UseRefId
-						? $" {CreateNamespacedTag("id", settings.Namespace)}=\"{visited[instance!]}\""
+						? $" {CreateNamespacedTag("id", settings.Namespace)}=\"{objRefId}\""
 						: string.Empty;
 
 					var nsTag = "";
@@ -161,13 +162,13 @@ public static class DragonMarkup {
 					return tag;
 				} else {
 					var hmlIdTag = settings.UseRefId
-						? $" {CreateNamespacedTag("id", settings.Namespace)}=\"{visited[instance!]}\""
+						? $" {CreateNamespacedTag("id", settings.Namespace)}=\"{objRefId}\""
 						: string.Empty;
 					return $"{indents}<{CreateNamespacedTag("ref", settings.Namespace)}{hmlIdTag}{hmlNameTag} />\n";
 				}
 			case DragonMarkupType.Dictionary when type != null:
-				if (!visited.ContainsKey(instance!)) {
-					visited[instance!] = visited.Count;
+				if (!visited.TryGetValue(instance!, out var dictRefId)) {
+					dictRefId = visited[instance!] = visited.Count;
 
 					var hmlKeyTag = string.Empty;
 					var hmlValueTag = string.Empty;
@@ -189,7 +190,7 @@ public static class DragonMarkup {
 					}
 
 					var hmlIdTag = settings.UseRefId
-						? $" {CreateNamespacedTag("id", settings.Namespace)}=\"{visited[instance!]}\""
+						? $" {CreateNamespacedTag("id", settings.Namespace)}=\"{dictRefId}\""
 						: string.Empty;
 					var tag =
 						$"{indents}<{CreateNamespacedTag("map", settings.Namespace)}{hmlIdTag}{hmlNameTag}{hmlKeyTag}{hmlValueTag}";
@@ -282,7 +283,7 @@ public static class DragonMarkup {
 					return tag;
 				} else {
 					var hmlIdTag = settings.UseRefId
-						? $" {CreateNamespacedTag("id", settings.Namespace)}=\"{visited[instance!]}\""
+						? $" {CreateNamespacedTag("id", settings.Namespace)}=\"{dictRefId}\""
 						: string.Empty;
 					return $"{indents}<{CreateNamespacedTag("ref", settings.Namespace)}{hmlIdTag}{hmlNameTag} />\n";
 				}

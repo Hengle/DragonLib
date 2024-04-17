@@ -43,7 +43,7 @@ public static class Signature {
 
 	public static List<int> FindSignatures(Span<byte> buffer, Span<SignatureByte> signature, int stop = -1, int limit = 0) {
 		if (signature.Length == 0) {
-			return new List<int>(0);
+			return [];
 		}
 
 		if (stop == -1) {
@@ -108,7 +108,7 @@ public static class Signature {
 
 	public static List<int> FindSignaturesReverse(Span<byte> buffer, Span<SignatureByte> signature, int stop = -1, int start = -1, int limit = 0) {
 		if (signature.Length == 0) {
-			return new List<int>(0);
+			return [];
 		}
 
 		if (stop == -1) {
@@ -146,7 +146,7 @@ public static class Signature {
 	public static SignatureByte[] CreateSignature(string signatureTemplate) {
 		var signatureOctets = signatureTemplate.ToHexOctets();
 		if (signatureOctets.Length < 1) {
-			return Array.Empty<SignatureByte>();
+			return [];
 		}
 
 		var signature = new SignatureByte[signatureOctets.Length];

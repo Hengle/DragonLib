@@ -37,7 +37,7 @@ public static class BitPacked {
 		var properties = Preload<T>();
 		object boxed = instance;
 		foreach (var (property, offset, _) in properties) {
-			var propertyValue = property.GetMethod?.Invoke(boxed, Array.Empty<object>());
+			var propertyValue = property.GetMethod?.Invoke(boxed, []);
 			if (propertyValue == null) {
 				continue;
 			}

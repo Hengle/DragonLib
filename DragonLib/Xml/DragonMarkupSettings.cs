@@ -3,7 +3,7 @@
 namespace DragonLib.Xml;
 
 public sealed record DragonMarkupSettings {
-	public List<IDragonMarkupSerializerFactory> TypeFactories = new();
+	public List<IDragonMarkupSerializerFactory> TypeFactories = [];
 	public Dictionary<Type, IDragonMarkupSerializer> TypeSerializers = new();
 
 	public bool UseRefId { get; init; } = true;

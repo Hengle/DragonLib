@@ -290,7 +290,7 @@ public static class CommandLineFlagsParser {
 		var skipped = options.SkipPositionals;
 		for (var index = 0; index < arguments.Length; index++) {
 			var argument = arguments[index];
-			if (argument.StartsWith("-")) {
+			if (argument.StartsWith('-')) {
 				if (argument.StartsWith("--")) {
 					if (!argMap.TryGetValue(argument[2..], out var argIndex)) {
 						argIndex = new HashSet<int>();
@@ -630,8 +630,8 @@ public static class CommandLineFlagsParser {
 			throw new InvalidCastException($"Cannot process {type.FullName}");
 		}
 
-		var visitorClassName = flag.Visitor[..flag.Visitor.LastIndexOf(".", StringComparison.Ordinal)];
-		var visitorMethodName = flag.Visitor[flag.Visitor.LastIndexOf(".", StringComparison.Ordinal)..];
+		var visitorClassName = flag.Visitor[..flag.Visitor.LastIndexOf('.')];
+		var visitorMethodName = flag.Visitor[flag.Visitor.LastIndexOf('.')..];
 		var visitorAssembly = flag.VisitorAssembly ?? typeof(T).Assembly;
 		var visitorClass = visitorAssembly.GetType(visitorClassName);
 		if (visitorClass == null) {

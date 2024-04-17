@@ -186,10 +186,9 @@ public sealed class DownloadAccelerator : IDisposable {
 
 	public async Task<byte[]?> FetchBytes(HttpMethod method, Uri uri, byte[]? body = null, ReadOnlyDictionary<string, string>? headers = null) {
 		uri = CombineUri(uri);
-		using var request = new HttpRequestMessage(method, uri) {
-			Version = HttpVersion.Version11,
-			VersionPolicy = HttpVersionPolicy.RequestVersionOrHigher,
-		};
+		using var request = new HttpRequestMessage(method, uri);
+		request.Version = HttpVersion.Version11;
+		request.VersionPolicy = HttpVersionPolicy.RequestVersionOrHigher;
 
 		if (body != null) {
 			request.Content = new ByteArrayContent(body);

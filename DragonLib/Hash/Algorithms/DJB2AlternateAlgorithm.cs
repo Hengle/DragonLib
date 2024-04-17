@@ -4,6 +4,7 @@ using System.Runtime.CompilerServices;
 namespace DragonLib.Hash.Algorithms;
 
 // https://theartincode.stanis.me/008-djb2/ with the java bug.
+// ReSharper disable UnusedMethodReturnValue.Global
 public sealed class DJB2AlternateAlgorithm<T> : SpanHashAlgorithm<T>
 	where T : unmanaged, INumber<T>, IBinaryInteger<T> {
 	private readonly T Basis;

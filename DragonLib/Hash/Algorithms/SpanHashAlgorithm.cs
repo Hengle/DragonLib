@@ -4,6 +4,7 @@ using System.Security.Cryptography;
 
 namespace DragonLib.Hash.Algorithms;
 
+// ReSharper disable MemberCanBeProtected.Global
 public abstract class SpanHashAlgorithm<T> : HashAlgorithm
 	where T : unmanaged, INumber<T> {
 	protected SpanHashAlgorithm() {

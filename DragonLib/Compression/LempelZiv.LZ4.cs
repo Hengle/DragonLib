@@ -34,17 +34,6 @@ public static partial class LempelZiv {
 		var cmpPos = 0;
 		var decPos = 0;
 
-		int GetLength(int length, ReadOnlySpan<byte> slc) {
-			if (length == 0xf) {
-				byte sum;
-				do {
-					length += sum = slc[cmpPos++];
-				} while (sum == 0xff);
-			}
-
-			return length;
-		}
-
 		do {
 			var token = cmp[cmpPos++];
 
@@ -110,5 +99,16 @@ public static partial class LempelZiv {
 		         decPos < dec.Length);
 
 		return (cmpPos, decPos);
+
+		int GetLength(int length, ReadOnlySpan<byte> slc) {
+			if (length == 0xf) {
+				byte sum;
+				do {
+					length += sum = slc[cmpPos++];
+				} while (sum == 0xff);
+			}
+
+			return length;
+		}
 	}
 }
