@@ -15,7 +15,7 @@ public class JsonNumberEnumConverter<T> : JsonConverter<T> where T : struct, Enu
 		// ReSharper disable once SwitchExpressionHandlesSomeKnownEnumValuesWithExceptionInDefault
 		return reader.TokenType switch {
 			       JsonTokenType.Number => (T) Enum.ToObject(typeof(T), reader.GetInt64()),
-			       JsonTokenType.String => (T) Enum.Parse(typeof(T), reader.GetString() ?? string.Empty, true),
+			       JsonTokenType.String => Enum.Parse<T>(reader.GetString() ?? string.Empty, true),
 			       _ => throw new JsonException("Unexpected token type"),
 		       };
 	}

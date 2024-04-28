@@ -50,11 +50,7 @@ public static class BitPacked {
 	}
 
 	public static T Unpack<T>(ulong value) where T : struct {
-		var instance = Activator.CreateInstance(typeof(T));
-		if (instance == null) {
-			return default;
-		}
-
+		var instance = Activator.CreateInstance<T>();
 		var properties = Preload<T>();
 		foreach (var (property, offset, mask) in properties) {
 			var propertyValue = (value >> offset) & mask;
@@ -72,6 +68,6 @@ public static class BitPacked {
 			property.SetValue(instance, intValue, null);
 		}
 
-		return (T) instance;
+		return instance;
 	}
 }
