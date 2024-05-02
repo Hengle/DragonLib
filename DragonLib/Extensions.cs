@@ -43,6 +43,17 @@ public static class Extensions {
 		return illegal.Aggregate(path, (current, ch) => current.Replace(ch, replaceChar));
 	}
 
+	public static string SanitizeTraversal(this string path, char replaceChar = '_') {
+		var illegal = Path.GetInvalidPathChars();
+
+		var value = illegal.Aggregate(path, (current, ch) => current.Replace(ch, replaceChar)).Replace("/../", "/", StringComparison.Ordinal);
+		if (OperatingSystem.IsWindows()) {
+			value = value.Replace("/", @"\", StringComparison.Ordinal).Replace(@"\..\", @"\", StringComparison.Ordinal);
+		}
+
+		return value.TrimStart('/', '\\', '.');
+	}
+
 	public static void EnsureDirectoryExists(this string path) {
 		var fullPath = Path.GetFullPath(path);
 		var directory = Path.GetDirectoryName(fullPath);
