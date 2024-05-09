@@ -25,7 +25,7 @@ public static class Extensions {
 	public static TimeSpan OneCentury { get; } = OneDecade * 10;
 	public static TimeSpan OneKiloyear { get; } = OneCentury * 10;
 
-	public static Span<T> Clone<T>(this Span<T> span) {
+	public static Span<T> Clone<T>(this ReadOnlySpan<T> span) {
 		var clone = new T[span.Length];
 		span.CopyTo(clone);
 		return new Span<T>(clone);
@@ -87,7 +87,7 @@ public static class Extensions {
 
 	public static ReadOnlySpan<TTo> As<TTo>(this ReadOnlySpan<byte> data) where TTo : struct => MemoryMarshal.Cast<byte, TTo>(data);
 
-	public static string? ReadString<T>(this Span<T> data, Encoding encoding, T terminator, out int length, int limit = -1) where T : struct, IEquatable<T> {
+	public static string? ReadString<T>(this ReadOnlySpan<T> data, Encoding encoding, T terminator, out int length, int limit = -1) where T : struct, IEquatable<T> {
 		if (limit > -1) {
 			data = data[..limit];
 		}
@@ -105,59 +105,59 @@ public static class Extensions {
 		return encoding.GetString(data[..length].AsBytes());
 	}
 
-	public static string ReadStringNonNull<T>(this Span<T> data, Encoding encoding, T terminator, out int index, int limit = -1) where T : struct, IEquatable<T> {
+	public static string ReadStringNonNull<T>(this ReadOnlySpan<T> data, Encoding encoding, T terminator, out int index, int limit = -1) where T : struct, IEquatable<T> {
 		var str = data.ReadString(encoding, terminator, out index, limit);
 		return str ?? string.Empty;
 	}
 
-	public static string? ReadASCIIString(this Span<byte> data, int limit = -1) => ReadString(data, Encoding.ASCII, (byte) 0, out _, limit);
-	public static string ReadASCIIStringNonNull(this Span<byte> data, int limit = -1) => ReadASCIIString(data, limit) ?? string.Empty;
-	public static string? ReadASCIIString(this Span<sbyte> data, int limit = -1) => ReadASCIIString(MemoryMarshal.Cast<sbyte, byte>(data), limit);
-	public static string ReadASCIIStringNonNull(this Span<sbyte> data, int limit = -1) => ReadASCIIString(MemoryMarshal.Cast<sbyte, byte>(data), limit) ?? string.Empty;
-	public static string? ReadUTF8String(this Span<byte> data, int limit = -1) => ReadString(data, Encoding.UTF8, (byte) 0, out _, limit);
-	public static string ReadUTF8StringNonNull(this Span<byte> data, int limit = -1) => ReadUTF8String(data, limit) ?? string.Empty;
-	public static string? ReadUTF8String(this Span<sbyte> data, int limit = -1) => ReadUTF8String(MemoryMarshal.Cast<sbyte, byte>(data), limit);
-	public static string ReadUTF8StringNonNull(this Span<sbyte> data, int limit = -1) => ReadUTF8String(MemoryMarshal.Cast<sbyte, byte>(data), limit) ?? string.Empty;
-	public static string? ReadUTF16String(this Span<char> data, int limit = -1, bool bigEndian = false) => ReadString(data, bigEndian ? Encoding.BigEndianUnicode : Encoding.Unicode, '\0', out _, limit);
-	public static string ReadUTF16StringNonNull(this Span<char> data, int limit = -1, bool bigEndian = false) => ReadUTF16String(data, limit, bigEndian) ?? string.Empty;
-	public static string? ReadUTF16String(this Span<ushort> data, int limit = -1, bool bigEndian = false) => ReadUTF16String(MemoryMarshal.Cast<ushort, char>(data), limit, bigEndian);
-	public static string ReadUTF16StringNonNull(this Span<ushort> data, int limit = -1, bool bigEndian = false) => ReadUTF16String(MemoryMarshal.Cast<ushort, char>(data), limit, bigEndian) ?? string.Empty;
-	public static string? ReadUTF16String(this Span<short> data, int limit = -1, bool bigEndian = false) => ReadUTF16String(MemoryMarshal.Cast<short, char>(data), limit, bigEndian);
-	public static string ReadUTF16StringNonNull(this Span<short> data, int limit = -1, bool bigEndian = false) => ReadUTF16String(MemoryMarshal.Cast<short, char>(data), limit, bigEndian) ?? string.Empty;
-	public static string? ReadUTF16String(this Span<byte> data, int limit = -1, bool bigEndian = false) => ReadUTF16String(MemoryMarshal.Cast<byte, char>(data), limit, bigEndian);
-	public static string ReadUTF16StringNonNull(this Span<byte> data, int limit = -1, bool bigEndian = false) => ReadUTF16String(MemoryMarshal.Cast<byte, char>(data), limit, bigEndian) ?? string.Empty;
-	public static string? ReadUTF32String(this Span<uint> data, int limit = -1) => ReadString(data, Encoding.UTF32, 0u, out _, limit);
-	public static string ReadUTF32StringNonNull(this Span<uint> data, int limit = -1) => ReadUTF32String(data, limit) ?? string.Empty;
-	public static string? ReadUTF32String(this Span<int> data, int limit = -1) => ReadUTF32String(MemoryMarshal.Cast<int, uint>(data), limit);
-	public static string ReadUTF32StringNonNull(this Span<int> data, int limit = -1) => ReadUTF32String(MemoryMarshal.Cast<int, uint>(data), limit) ?? string.Empty;
-	public static string? ReadUTF32String(this Span<char> data, int limit = -1) => ReadUTF32String(MemoryMarshal.Cast<char, uint>(data), limit);
-	public static string ReadUTF32StringNonNull(this Span<char> data, int limit = -1) => ReadUTF32String(MemoryMarshal.Cast<char, uint>(data), limit) ?? string.Empty;
-	public static string? ReadUTF32String(this Span<byte> data, int limit = -1) => ReadUTF32String(MemoryMarshal.Cast<byte, uint>(data), limit);
-	public static string ReadUTF32StringNonNull(this Span<byte> data, int limit = -1) => ReadUTF32String(MemoryMarshal.Cast<byte, uint>(data), limit) ?? string.Empty;
-	public static string? ReadASCIIString(this Span<byte> data, out int size, int limit = -1) => ReadString(data, Encoding.ASCII, (byte) 0, out size, limit);
-	public static string ReadASCIIStringNonNull(this Span<byte> data, out int size, int limit = -1) => ReadASCIIString(data, out size, limit) ?? string.Empty;
-	public static string? ReadASCIIString(this Span<sbyte> data, out int size, int limit = -1) => ReadASCIIString(MemoryMarshal.Cast<sbyte, byte>(data), out size, limit);
-	public static string ReadASCIIStringNonNull(this Span<sbyte> data, out int size, int limit = -1) => ReadASCIIString(MemoryMarshal.Cast<sbyte, byte>(data), out size, limit) ?? string.Empty;
-	public static string? ReadUTF8String(this Span<byte> data, out int size, int limit = -1) => ReadString(data, Encoding.UTF8, (byte) 0, out size, limit);
-	public static string ReadUTF8StringNonNull(this Span<byte> data, out int size, int limit = -1) => ReadUTF8String(data, out size, limit) ?? string.Empty;
-	public static string? ReadUTF8String(this Span<sbyte> data, out int size, int limit = -1) => ReadUTF8String(MemoryMarshal.Cast<sbyte, byte>(data), out size, limit);
-	public static string ReadUTF8StringNonNull(this Span<sbyte> data, out int size, int limit = -1) => ReadUTF8String(MemoryMarshal.Cast<sbyte, byte>(data), out size, limit) ?? string.Empty;
-	public static string? ReadUTF16String(this Span<char> data, out int size, int limit = -1, bool bigEndian = false) => ReadString(data, bigEndian ? Encoding.BigEndianUnicode : Encoding.Unicode, '\0', out size, limit);
-	public static string ReadUTF16StringNonNull(this Span<char> data, out int size, int limit = -1, bool bigEndian = false) => ReadUTF16String(data, out size, limit, bigEndian) ?? string.Empty;
-	public static string? ReadUTF16String(this Span<ushort> data, out int size, int limit = -1, bool bigEndian = false) => ReadUTF16String(MemoryMarshal.Cast<ushort, char>(data), out size, limit, bigEndian);
-	public static string ReadUTF16StringNonNull(this Span<ushort> data, out int size, int limit = -1, bool bigEndian = false) => ReadUTF16String(MemoryMarshal.Cast<ushort, char>(data), out size, limit, bigEndian) ?? string.Empty;
-	public static string? ReadUTF16String(this Span<short> data, out int size, int limit = -1, bool bigEndian = false) => ReadUTF16String(MemoryMarshal.Cast<short, char>(data), out size, limit, bigEndian);
-	public static string ReadUTF16StringNonNull(this Span<short> data, out int size, int limit = -1, bool bigEndian = false) => ReadUTF16String(MemoryMarshal.Cast<short, char>(data), out size, limit, bigEndian) ?? string.Empty;
-	public static string? ReadUTF16String(this Span<byte> data, out int size, int limit = -1, bool bigEndian = false) => ReadUTF16String(MemoryMarshal.Cast<byte, char>(data), out size, limit, bigEndian);
-	public static string ReadUTF16StringNonNull(this Span<byte> data, out int size, int limit = -1, bool bigEndian = false) => ReadUTF16String(MemoryMarshal.Cast<byte, char>(data), out size, limit, bigEndian) ?? string.Empty;
-	public static string? ReadUTF32String(this Span<uint> data, out int size, int limit = -1) => ReadString(data, Encoding.UTF32, 0u, out size, limit);
-	public static string ReadUTF32StringNonNull(this Span<uint> data, out int size, int limit = -1) => ReadUTF32String(data, out size, limit) ?? string.Empty;
-	public static string? ReadUTF32String(this Span<int> data, out int size, int limit = -1) => ReadUTF32String(MemoryMarshal.Cast<int, uint>(data), out size, limit);
-	public static string ReadUTF32StringNonNull(this Span<int> data, out int size, int limit = -1) => ReadUTF32String(MemoryMarshal.Cast<int, uint>(data), out size, limit) ?? string.Empty;
-	public static string? ReadUTF32String(this Span<char> data, out int size, int limit = -1) => ReadUTF32String(MemoryMarshal.Cast<char, uint>(data), out size, limit);
-	public static string ReadUTF32StringNonNull(this Span<char> data, out int size, int limit = -1) => ReadUTF32String(MemoryMarshal.Cast<char, uint>(data), out size, limit) ?? string.Empty;
-	public static string? ReadUTF32String(this Span<byte> data, out int size, int limit = -1) => ReadUTF32String(MemoryMarshal.Cast<byte, uint>(data), out size, limit);
-	public static string ReadUTF32StringNonNull(this Span<byte> data, out int size, int limit = -1) => ReadUTF32String(MemoryMarshal.Cast<byte, uint>(data), out size, limit) ?? string.Empty;
+	public static string? ReadASCIIString(this ReadOnlySpan<byte> data, int limit = -1) => ReadString(data, Encoding.ASCII, (byte) 0, out _, limit);
+	public static string ReadASCIIStringNonNull(this ReadOnlySpan<byte> data, int limit = -1) => ReadASCIIString(data, limit) ?? string.Empty;
+	public static string? ReadASCIIString(this ReadOnlySpan<sbyte> data, int limit = -1) => ReadASCIIString(MemoryMarshal.Cast<sbyte, byte>(data), limit);
+	public static string ReadASCIIStringNonNull(this ReadOnlySpan<sbyte> data, int limit = -1) => ReadASCIIString(MemoryMarshal.Cast<sbyte, byte>(data), limit) ?? string.Empty;
+	public static string? ReadUTF8String(this ReadOnlySpan<byte> data, int limit = -1) => ReadString(data, Encoding.UTF8, (byte) 0, out _, limit);
+	public static string ReadUTF8StringNonNull(this ReadOnlySpan<byte> data, int limit = -1) => ReadUTF8String(data, limit) ?? string.Empty;
+	public static string? ReadUTF8String(this ReadOnlySpan<sbyte> data, int limit = -1) => ReadUTF8String(MemoryMarshal.Cast<sbyte, byte>(data), limit);
+	public static string ReadUTF8StringNonNull(this ReadOnlySpan<sbyte> data, int limit = -1) => ReadUTF8String(MemoryMarshal.Cast<sbyte, byte>(data), limit) ?? string.Empty;
+	public static string? ReadUTF16String(this ReadOnlySpan<char> data, int limit = -1, bool bigEndian = false) => ReadString(data, bigEndian ? Encoding.BigEndianUnicode : Encoding.Unicode, '\0', out _, limit);
+	public static string ReadUTF16StringNonNull(this ReadOnlySpan<char> data, int limit = -1, bool bigEndian = false) => ReadUTF16String(data, limit, bigEndian) ?? string.Empty;
+	public static string? ReadUTF16String(this ReadOnlySpan<ushort> data, int limit = -1, bool bigEndian = false) => ReadUTF16String(MemoryMarshal.Cast<ushort, char>(data), limit, bigEndian);
+	public static string ReadUTF16StringNonNull(this ReadOnlySpan<ushort> data, int limit = -1, bool bigEndian = false) => ReadUTF16String(MemoryMarshal.Cast<ushort, char>(data), limit, bigEndian) ?? string.Empty;
+	public static string? ReadUTF16String(this ReadOnlySpan<short> data, int limit = -1, bool bigEndian = false) => ReadUTF16String(MemoryMarshal.Cast<short, char>(data), limit, bigEndian);
+	public static string ReadUTF16StringNonNull(this ReadOnlySpan<short> data, int limit = -1, bool bigEndian = false) => ReadUTF16String(MemoryMarshal.Cast<short, char>(data), limit, bigEndian) ?? string.Empty;
+	public static string? ReadUTF16String(this ReadOnlySpan<byte> data, int limit = -1, bool bigEndian = false) => ReadUTF16String(MemoryMarshal.Cast<byte, char>(data), limit, bigEndian);
+	public static string ReadUTF16StringNonNull(this ReadOnlySpan<byte> data, int limit = -1, bool bigEndian = false) => ReadUTF16String(MemoryMarshal.Cast<byte, char>(data), limit, bigEndian) ?? string.Empty;
+	public static string? ReadUTF32String(this ReadOnlySpan<uint> data, int limit = -1) => ReadString(data, Encoding.UTF32, 0u, out _, limit);
+	public static string ReadUTF32StringNonNull(this ReadOnlySpan<uint> data, int limit = -1) => ReadUTF32String(data, limit) ?? string.Empty;
+	public static string? ReadUTF32String(this ReadOnlySpan<int> data, int limit = -1) => ReadUTF32String(MemoryMarshal.Cast<int, uint>(data), limit);
+	public static string ReadUTF32StringNonNull(this ReadOnlySpan<int> data, int limit = -1) => ReadUTF32String(MemoryMarshal.Cast<int, uint>(data), limit) ?? string.Empty;
+	public static string? ReadUTF32String(this ReadOnlySpan<char> data, int limit = -1) => ReadUTF32String(MemoryMarshal.Cast<char, uint>(data), limit);
+	public static string ReadUTF32StringNonNull(this ReadOnlySpan<char> data, int limit = -1) => ReadUTF32String(MemoryMarshal.Cast<char, uint>(data), limit) ?? string.Empty;
+	public static string? ReadUTF32String(this ReadOnlySpan<byte> data, int limit = -1) => ReadUTF32String(MemoryMarshal.Cast<byte, uint>(data), limit);
+	public static string ReadUTF32StringNonNull(this ReadOnlySpan<byte> data, int limit = -1) => ReadUTF32String(MemoryMarshal.Cast<byte, uint>(data), limit) ?? string.Empty;
+	public static string? ReadASCIIString(this ReadOnlySpan<byte> data, out int size, int limit = -1) => ReadString(data, Encoding.ASCII, (byte) 0, out size, limit);
+	public static string ReadASCIIStringNonNull(this ReadOnlySpan<byte> data, out int size, int limit = -1) => ReadASCIIString(data, out size, limit) ?? string.Empty;
+	public static string? ReadASCIIString(this ReadOnlySpan<sbyte> data, out int size, int limit = -1) => ReadASCIIString(MemoryMarshal.Cast<sbyte, byte>(data), out size, limit);
+	public static string ReadASCIIStringNonNull(this ReadOnlySpan<sbyte> data, out int size, int limit = -1) => ReadASCIIString(MemoryMarshal.Cast<sbyte, byte>(data), out size, limit) ?? string.Empty;
+	public static string? ReadUTF8String(this ReadOnlySpan<byte> data, out int size, int limit = -1) => ReadString(data, Encoding.UTF8, (byte) 0, out size, limit);
+	public static string ReadUTF8StringNonNull(this ReadOnlySpan<byte> data, out int size, int limit = -1) => ReadUTF8String(data, out size, limit) ?? string.Empty;
+	public static string? ReadUTF8String(this ReadOnlySpan<sbyte> data, out int size, int limit = -1) => ReadUTF8String(MemoryMarshal.Cast<sbyte, byte>(data), out size, limit);
+	public static string ReadUTF8StringNonNull(this ReadOnlySpan<sbyte> data, out int size, int limit = -1) => ReadUTF8String(MemoryMarshal.Cast<sbyte, byte>(data), out size, limit) ?? string.Empty;
+	public static string? ReadUTF16String(this ReadOnlySpan<char> data, out int size, int limit = -1, bool bigEndian = false) => ReadString(data, bigEndian ? Encoding.BigEndianUnicode : Encoding.Unicode, '\0', out size, limit);
+	public static string ReadUTF16StringNonNull(this ReadOnlySpan<char> data, out int size, int limit = -1, bool bigEndian = false) => ReadUTF16String(data, out size, limit, bigEndian) ?? string.Empty;
+	public static string? ReadUTF16String(this ReadOnlySpan<ushort> data, out int size, int limit = -1, bool bigEndian = false) => ReadUTF16String(MemoryMarshal.Cast<ushort, char>(data), out size, limit, bigEndian);
+	public static string ReadUTF16StringNonNull(this ReadOnlySpan<ushort> data, out int size, int limit = -1, bool bigEndian = false) => ReadUTF16String(MemoryMarshal.Cast<ushort, char>(data), out size, limit, bigEndian) ?? string.Empty;
+	public static string? ReadUTF16String(this ReadOnlySpan<short> data, out int size, int limit = -1, bool bigEndian = false) => ReadUTF16String(MemoryMarshal.Cast<short, char>(data), out size, limit, bigEndian);
+	public static string ReadUTF16StringNonNull(this ReadOnlySpan<short> data, out int size, int limit = -1, bool bigEndian = false) => ReadUTF16String(MemoryMarshal.Cast<short, char>(data), out size, limit, bigEndian) ?? string.Empty;
+	public static string? ReadUTF16String(this ReadOnlySpan<byte> data, out int size, int limit = -1, bool bigEndian = false) => ReadUTF16String(MemoryMarshal.Cast<byte, char>(data), out size, limit, bigEndian);
+	public static string ReadUTF16StringNonNull(this ReadOnlySpan<byte> data, out int size, int limit = -1, bool bigEndian = false) => ReadUTF16String(MemoryMarshal.Cast<byte, char>(data), out size, limit, bigEndian) ?? string.Empty;
+	public static string? ReadUTF32String(this ReadOnlySpan<uint> data, out int size, int limit = -1) => ReadString(data, Encoding.UTF32, 0u, out size, limit);
+	public static string ReadUTF32StringNonNull(this ReadOnlySpan<uint> data, out int size, int limit = -1) => ReadUTF32String(data, out size, limit) ?? string.Empty;
+	public static string? ReadUTF32String(this ReadOnlySpan<int> data, out int size, int limit = -1) => ReadUTF32String(MemoryMarshal.Cast<int, uint>(data), out size, limit);
+	public static string ReadUTF32StringNonNull(this ReadOnlySpan<int> data, out int size, int limit = -1) => ReadUTF32String(MemoryMarshal.Cast<int, uint>(data), out size, limit) ?? string.Empty;
+	public static string? ReadUTF32String(this ReadOnlySpan<char> data, out int size, int limit = -1) => ReadUTF32String(MemoryMarshal.Cast<char, uint>(data), out size, limit);
+	public static string ReadUTF32StringNonNull(this ReadOnlySpan<char> data, out int size, int limit = -1) => ReadUTF32String(MemoryMarshal.Cast<char, uint>(data), out size, limit) ?? string.Empty;
+	public static string? ReadUTF32String(this ReadOnlySpan<byte> data, out int size, int limit = -1) => ReadUTF32String(MemoryMarshal.Cast<byte, uint>(data), out size, limit);
+	public static string ReadUTF32StringNonNull(this ReadOnlySpan<byte> data, out int size, int limit = -1) => ReadUTF32String(MemoryMarshal.Cast<byte, uint>(data), out size, limit) ?? string.Empty;
 
 	public static int Align(this int value, int n) => unchecked(value + (n - 1)) & ~(n - 1);
 
@@ -201,7 +201,7 @@ public static class Extensions {
 		                 .ToArray();
 	}
 
-	public static string ToHexString<T>(this Span<T> input, string separator = "", string prefix = "") where T : IConvertible {
+	public static string ToHexString<T>(this ReadOnlySpan<T> input, string separator = "", string prefix = "") where T : IConvertible {
 		var formatter = $"x{Marshal.SizeOf<T>() * 2}";
 		var sb = new StringBuilder();
 		if (prefix.Length > 0 && separator.Length == 0) {
