@@ -16,7 +16,7 @@ public readonly record struct SignatureByte(byte Value, bool IsWildcard) {
 }
 
 public static class Signature {
-	public static int FindSignature(Span<byte> buffer, Span<SignatureByte> signature) {
+	public static int FindSignature(ReadOnlySpan<byte> buffer, ReadOnlySpan<SignatureByte> signature) {
 		if (signature.Length == 0) {
 			return -1;
 		}
@@ -41,7 +41,7 @@ public static class Signature {
 		return -1;
 	}
 
-	public static List<int> FindSignatures(Span<byte> buffer, Span<SignatureByte> signature, int stop = -1, int limit = 0) {
+	public static List<int> FindSignatures(ReadOnlySpan<byte> buffer, ReadOnlySpan<SignatureByte> signature, int stop = -1, int limit = 0) {
 		if (signature.Length == 0) {
 			return [];
 		}
@@ -77,7 +77,7 @@ public static class Signature {
 		return signatures;
 	}
 
-	public static int FindSignatureReverse(Span<byte> buffer, Span<SignatureByte> signature, int start = -1) {
+	public static int FindSignatureReverse(ReadOnlySpan<byte> buffer, ReadOnlySpan<SignatureByte> signature, int start = -1) {
 		if (signature.Length == 0) {
 			return -1;
 		}
@@ -106,7 +106,7 @@ public static class Signature {
 		return -1;
 	}
 
-	public static List<int> FindSignaturesReverse(Span<byte> buffer, Span<SignatureByte> signature, int stop = -1, int start = -1, int limit = 0) {
+	public static List<int> FindSignaturesReverse(ReadOnlySpan<byte> buffer, ReadOnlySpan<SignatureByte> signature, int stop = -1, int start = -1, int limit = 0) {
 		if (signature.Length == 0) {
 			return [];
 		}
@@ -161,22 +161,22 @@ public static class Signature {
 		return signature;
 	}
 
-	public static int FindSignature(Span<byte> buffer, string signatureTemplate) {
+	public static int FindSignature(ReadOnlySpan<byte> buffer, string signatureTemplate) {
 		var signature = CreateSignature(signatureTemplate);
 		return FindSignature(buffer, signature);
 	}
 
-	public static List<int> FindSignatures(Span<byte> buffer, string signatureTemplate, int stop = -1, int limit = 0) {
+	public static List<int> FindSignatures(ReadOnlySpan<byte> buffer, string signatureTemplate, int stop = -1, int limit = 0) {
 		var signature = CreateSignature(signatureTemplate);
 		return FindSignatures(buffer, signature, stop, limit);
 	}
 
-	public static int FindSignatureReverse(Span<byte> buffer, string signatureTemplate, int start = -1) {
+	public static int FindSignatureReverse(ReadOnlySpan<byte> buffer, string signatureTemplate, int start = -1) {
 		var signature = CreateSignature(signatureTemplate);
 		return FindSignatureReverse(buffer, signature, start);
 	}
 
-	public static List<int> FindSignaturesReverse(Span<byte> buffer, string signatureTemplate, int stop = -1, int start = -1, int limit = 0) {
+	public static List<int> FindSignaturesReverse(ReadOnlySpan<byte> buffer, string signatureTemplate, int stop = -1, int start = -1, int limit = 0) {
 		var signature = CreateSignature(signatureTemplate);
 		return FindSignaturesReverse(buffer, signature, stop, start, limit);
 	}
