@@ -25,15 +25,24 @@ public static class Command {
 		}
 	}
 
-	public static void Run(out string? commandName, out string? commandGroupName, CommandLineFlags? globalFlags = null, CommandLineFlagsParser.PrintHelpDelegate? printHelp = null, object[]? carry = null, string[]? args = null) => Run<object>(out commandName, out commandGroupName, globalFlags, printHelp, carry, args);
+	public static void Run(out string? commandName, out string? commandGroupName, CommandLineFlags? globalFlags = null, CommandLineFlagsParser.PrintHelpDelegate? printHelp = null, object[]? carry = null, string[]? args = null, char suffixSeparator = '\0') => Run<object>(out commandName, out commandGroupName, globalFlags, printHelp, carry, args);
 
-	public static T? Run<T>(out string? commandName, out string? commandGroupName, CommandLineFlags? globalFlags = null, CommandLineFlagsParser.PrintHelpDelegate? printHelp = null, object[]? carry = null, string[]? args = null) {
+	public static T? Run<T>(out string? commandName, out string? commandGroupName, CommandLineFlags? globalFlags = null, CommandLineFlagsParser.PrintHelpDelegate? printHelp = null, object[]? carry = null, string[]? args = null, char suffixSeparator = '\0') {
 		LoadCommands();
 
 		commandName = null;
 		commandGroupName = null;
 
-		args ??= Environment.GetCommandLineArgs().Skip(1).ToArray();
+		if (args == null) {
+			var envArgs = Environment.GetCommandLineArgs();
+			var procName = Path.GetFileNameWithoutExtension(envArgs[0]);
+			if(suffixSeparator != '\0' && procName.Contains(suffixSeparator)) {
+				var procNameParts = procName.Split(suffixSeparator)[1..];
+				args = procNameParts.Concat(envArgs[1..]).ToArray();
+			} else {
+				args = envArgs[1..];
+			}
+		}
 		printHelp ??= CommandLineFlagsParser.PrintHelp;
 		var positionalFlags = CommandLineFlagsParser.ParseFlags<CommandLineFlags>(new CommandLineOptions {
 			UseHelp = false,
