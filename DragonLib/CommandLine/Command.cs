@@ -36,7 +36,7 @@ public static class Command {
 		if (args == null) {
 			var envArgs = Environment.GetCommandLineArgs();
 			var procName = Path.GetFileNameWithoutExtension(envArgs[0]);
-			if(suffixSeparator != '\0' && procName.Contains(suffixSeparator)) {
+			if(suffixSeparator != '\0' && procName.Contains(suffixSeparator, StringComparison.Ordinal)) {
 				var procNameParts = procName.Split(suffixSeparator)[1..];
 				args = procNameParts.Concat(envArgs[1..]).ToArray();
 			} else {
