@@ -24,12 +24,12 @@ public abstract class SpanHashAlgorithm<T> : HashAlgorithm
 		return MemoryMarshal.AsBytes(tmp).ToArray();
 	}
 
-	public virtual T ComputeHashValue(Span<byte> bytes) {
+	public virtual T ComputeHashValue(ReadOnlySpan<byte> bytes) {
 		HashCore(bytes);
 		return GetValueFinal();
 	}
 
-	public byte[] ComputeHash(Span<byte> bytes) {
+	public byte[] ComputeHash(ReadOnlySpan<byte> bytes) {
 		HashCore(bytes);
 		return HashFinal();
 	}
