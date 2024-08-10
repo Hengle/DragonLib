@@ -191,7 +191,7 @@ public static class CommandLineFlagsParser {
 				}
 
 				var defaultValue = GetDefaultValue(property, instance);
-				if (defaultValue != null && !defaultValue.Equals(def)) {
+				if (defaultValue != null && !defaultValue.Equals(def) && (type.IsValueType || type.FullName == "System.String")) {
 					requiredParts.Add($"Default: {(type.IsEnum ? ((Enum) defaultValue).ToString("F") : defaultValue.ToString())}");
 				}
 
