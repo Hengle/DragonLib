@@ -10,7 +10,6 @@ public abstract class RuntimeArrayBase : IEquatable<RuntimeArrayBase> {
 	internal static unsafe FreeArrayDelegate NativeFree { get; } = NativeMemory.Free;
 	internal static unsafe FreeArrayDelegate NativeAlignedFree { get; } = NativeMemory.AlignedFree;
 
-	// ReSharper disable once MemberCanBeProtected.Global
 	public long Length { get; protected init; }
 	protected nint Ptr { get; init; }
 	protected bool Freed { get; set; }
