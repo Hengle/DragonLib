@@ -6,6 +6,11 @@ namespace DragonLib.IO;
 public class MemoryBufferReader(IMemoryBuffer Buffer) : IDisposable {
 	public int Offset { get; set; }
 
+	public void Dispose() {
+		Dispose(true);
+		GC.SuppressFinalize(this);
+	}
+
 	public T Read<T>() where T : struct {
 		var value = MemoryMarshal.Read<T>(Buffer.Span[Offset..]);
 		Offset += Unsafe.SizeOf<T>();
@@ -30,10 +35,5 @@ public class MemoryBufferReader(IMemoryBuffer Buffer) : IDisposable {
 
 	~MemoryBufferReader() {
 		Dispose(false);
-	}
-
-	public void Dispose() {
-		Dispose(true);
-		GC.SuppressFinalize(this);
 	}
 }

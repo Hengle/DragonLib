@@ -58,6 +58,8 @@ public class FileEnumerator : IEnumerable<string> {
 		}
 	}
 
+	IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+
 	private bool IsMatch(string path) {
 		foreach (var expression in Expressions) {
 			// thank you microsoft for not making this internal.
@@ -68,6 +70,4 @@ public class FileEnumerator : IEnumerable<string> {
 
 		return false;
 	}
-
-	IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 }
