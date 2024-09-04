@@ -409,4 +409,20 @@ public static class Extensions {
 	}
 
 	public static T? SafeDequeue<T>(this Queue<T> queue, T? fallback = default) => queue.Count == 0 ? fallback : queue.Dequeue();
+
+	public static T GreatestCommonDivisor<T>(this T left, T right) where T : IBinaryInteger<T> {
+		while (right != T.Zero) {
+			var temp = right;
+			right = left % right;
+			left = temp;
+		}
+
+		return left;
+	}
+
+	public static T FirstMultipleOf<T>(this T value, T multiple) where T : IBinaryInteger<T> {
+		var gcd = value.GreatestCommonDivisor(multiple);
+		var k = multiple / gcd;
+		return value * k;
+	}
 }
