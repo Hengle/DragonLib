@@ -9,7 +9,7 @@
 		<DebugType>portable</DebugType>
 		<Nullable>enable</Nullable>
 		<LangVersion>preview</LangVersion>
-		<TargetFramework>net8.0</TargetFramework>
+		<TargetFrameworks>net8.0;net9.0</TargetFrameworks>
 		<PackageId>DragonLib</PackageId>
 		<Version>3.1.0.0-prerel</Version>
 		<Authors>yretenai</Authors>
